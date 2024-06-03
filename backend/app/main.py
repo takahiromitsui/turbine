@@ -1,16 +1,18 @@
-# local
-from app.db.database import client
+from fastapi import FastAPI
+import uvicorn
 
-def insert_data(data):
-    db = client.get_database('test')
-    collection = db.test
-    test_document = {
-        "name": "test",
-        "age": 20
-    }
-    inserted_id = collection.insert_one(test_document).inserted_id
-    print(f"Inserted ID: {inserted_id}")
+app = FastAPI(
+    title="Turbit API",
+    description="Turbit API",
+    version="0.1.0",
+)
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
 
 if __name__ == "__main__":
-    insert_data("test")
+    # poetry run fastapi dev app/main.py
+    uvicorn.run(app, host="0.0.0.0", port=8000)
