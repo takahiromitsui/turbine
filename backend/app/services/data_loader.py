@@ -1,5 +1,5 @@
 import requests
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 from pydantic import BaseModel
 
 
@@ -47,6 +47,7 @@ class DataLoader:
             if posts:
                 posts_collection = self.db.posts
                 users_collection = self.db.users
+                bulk_operations = []
                 for post in posts:
                     post = post.model_dump()
                     data = {
@@ -58,12 +59,15 @@ class DataLoader:
                     }
 
                     post_id = posts_collection.insert_one(data).inserted_id
-                    users_collection.update_one(
-                        {"id": post.get("userId")},
-                        {"$push": {"posts": post_id}},
-                        upsert=True,
+                    bulk_operations.append(
+                        UpdateOne(
+                            {"id": post.get("userId")},
+                            {"$push": {"posts": post_id}},
+                            upsert=True,
+                        )
                     )
-                    self.post_ids.append(post_id)
+                    self.post_ids.append(post.get("id"))
+                users_collection.bulk_write(bulk_operations)
         except Exception as e:
             print(e)
 
@@ -90,6 +94,7 @@ class DataLoader:
             if comments:
                 comments_collection = self.db.comments
                 posts_collection = self.db.posts
+                bulk_operations = []
                 for comment in comments:
                     comment = comment.model_dump()
                     data = {
@@ -101,17 +106,21 @@ class DataLoader:
                     }
 
                     comment_id = comments_collection.insert_one(data).inserted_id
-                    posts_collection.update_one(
-                        {"id": comment.get("postId")},
-                        {"$push": {"comments": comment_id}},
-                        upsert=True,
+                    bulk_operations.append(
+                        UpdateOne(
+                            {"id": comment.get("postId")},
+                            {"$push": {"comments": comment_id}},
+                            upsert=True,
+                        )
                     )
+                posts_collection.bulk_write(bulk_operations)
         except Exception as e:
             print(e)
 
     def LoadData(self):
         self._insert_posts_and_user()
         self._insert_comments_update_posts()
+        print("Data loaded successfully")
 
 
 if __name__ == "__main__":
