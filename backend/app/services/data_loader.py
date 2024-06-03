@@ -10,6 +10,14 @@ class Post(BaseModel):
     body: str
 
 
+class Comment(BaseModel):
+    postId: int
+    id: int
+    name: str
+    email: str
+    body: str
+
+
 class DataLoader:
     def __init__(
         self,
@@ -33,7 +41,7 @@ class DataLoader:
             print(e)
             return None
 
-    def insert_posts_and_user(self):
+    def insert_posts_and_user(self) -> None:
         try:
             posts = self.fetch_posts()
             if posts:
@@ -59,6 +67,23 @@ class DataLoader:
         except Exception as e:
             print(e)
 
+    def fetch_comments(self) -> list[Comment] | None:
+        if not self.post_ids:
+            print("No post ids found")
+            return None
+        try:
+            res: list[Comment] = []
+            for post_id in self.post_ids:
+                response = requests.get(f"{self.url}/posts/{post_id}/comments")
+                response.raise_for_status()
+                data = response.json()
+                comments = [Comment(**comment) for comment in data]
+                res.extend(comments)
+            return res
+        except Exception as e:
+            print(e)
+            return None
+
 
 if __name__ == "__main__":
     from app.db.database import client
@@ -66,4 +91,6 @@ if __name__ == "__main__":
     data_loader = DataLoader(client)
     # posts = data_loader.fetch_posts()
     # print(posts)
-    data_loader.insert_posts_and_user()
+    # data_loader.insert_posts_and_user()
+    # comments = data_loader.fetch_comments()
+    # print(len(comments))
