@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.11"
 pymongo = {version = "3.11", extras = ["srv"]}
 python-dotenv = "^1.0.1"
+requests = "^2.32.3"
+pydantic = "^2.7.2"
 
 
 [build-system]
