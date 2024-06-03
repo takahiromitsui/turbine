@@ -30,7 +30,7 @@ class DataLoader:
         self.db = self.client.get_database(database)
         self.post_ids = []
 
-    def fetch_posts(self) -> list[Post] | None:
+    def _fetch_posts(self) -> list[Post] | None:
         response = requests.get(f"{self.url}/posts")
         try:
             response.raise_for_status()
@@ -41,9 +41,9 @@ class DataLoader:
             print(e)
             return None
 
-    def insert_posts_and_user(self) -> None:
+    def _insert_posts_and_user(self) -> None:
         try:
-            posts = self.fetch_posts()
+            posts = self._fetch_posts()
             if posts:
                 posts_collection = self.db.posts
                 users_collection = self.db.users
@@ -67,7 +67,7 @@ class DataLoader:
         except Exception as e:
             print(e)
 
-    def fetch_comments(self) -> list[Comment] | None:
+    def _fetch_comments(self) -> list[Comment] | None:
         if not self.post_ids:
             print("No post ids found")
             return None
@@ -84,11 +84,41 @@ class DataLoader:
             print(e)
             return None
 
+    def _insert_comments_update_posts(self) -> None:
+        try:
+            comments = self._fetch_comments()
+            if comments:
+                comments_collection = self.db.comments
+                posts_collection = self.db.posts
+                for comment in comments:
+                    comment = comment.model_dump()
+                    data = {
+                        "postId": comment.get("postId"),
+                        "id": comment.get("id"),
+                        "name": comment.get("name"),
+                        "email": comment.get("email"),
+                        "body": comment.get("body"),
+                    }
+
+                    comment_id = comments_collection.insert_one(data).inserted_id
+                    posts_collection.update_one(
+                        {"id": comment.get("postId")},
+                        {"$push": {"comments": comment_id}},
+                        upsert=True,
+                    )
+        except Exception as e:
+            print(e)
+
+    def LoadData(self):
+        self._insert_posts_and_user()
+        self._insert_comments_update_posts()
+
 
 if __name__ == "__main__":
     from app.db.database import client
 
     data_loader = DataLoader(client)
+    data_loader.LoadData()
     # posts = data_loader.fetch_posts()
     # print(posts)
     # data_loader.insert_posts_and_user()
