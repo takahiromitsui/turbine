@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 import uvicorn
 
+from app.services import json_placeholder
+
 app = FastAPI(
     title="Turbit API",
     description="Turbit API",
@@ -11,6 +13,12 @@ app = FastAPI(
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get("/task1/users/{user_id}/stats")
+def read_user_stats(user_id: int):
+    res = json_placeholder.get_post_comment_counts(user_id)
+    return res
 
 
 if __name__ == "__main__":
