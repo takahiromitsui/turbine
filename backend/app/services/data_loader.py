@@ -30,7 +30,7 @@ class DataLoader:
         self.db = self.client.get_database(database)
         self.post_ids = []
 
-    def _fetch_posts(self) -> list[Post] | None:
+    def __fetch_posts(self) -> list[Post] | None:
         response = requests.get(f"{self.url}/posts")
         try:
             response.raise_for_status()
@@ -41,9 +41,9 @@ class DataLoader:
             print(e)
             return None
 
-    def _insert_posts_and_user(self) -> None:
+    def __insert_posts_and_user(self) -> None:
         try:
-            posts = self._fetch_posts()
+            posts = self.__fetch_posts()
             if posts:
                 posts_collection = self.db.posts
                 users_collection = self.db.users
@@ -71,7 +71,7 @@ class DataLoader:
         except Exception as e:
             print(e)
 
-    def _fetch_comments(self) -> list[Comment] | None:
+    def __fetch_comments(self) -> list[Comment] | None:
         if not self.post_ids:
             print("No post ids found")
             return None
@@ -88,9 +88,9 @@ class DataLoader:
             print(e)
             return None
 
-    def _insert_comments_update_posts(self) -> None:
+    def __insert_comments_update_posts(self) -> None:
         try:
-            comments = self._fetch_comments()
+            comments = self.__fetch_comments()
             if comments:
                 comments_collection = self.db.comments
                 posts_collection = self.db.posts
@@ -117,9 +117,10 @@ class DataLoader:
         except Exception as e:
             print(e)
 
-    def LoadData(self):
-        self._insert_posts_and_user()
-        self._insert_comments_update_posts()
+    # Task1
+    def load_data_from_api(self):
+        self.__insert_posts_and_user()
+        self.__insert_comments_update_posts()
         print("Data loaded successfully")
 
 
@@ -127,7 +128,7 @@ if __name__ == "__main__":
     from app.db.database import client
 
     data_loader = DataLoader(client)
-    data_loader.LoadData()
+    data_loader.load_data_from_api()
     # posts = data_loader.fetch_posts()
     # print(posts)
     # data_loader.insert_posts_and_user()
