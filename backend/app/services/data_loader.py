@@ -1,5 +1,5 @@
 import requests
-from pymongo import MongoClient, UpdateOne
+from pymongo import UpdateOne
 from pydantic import BaseModel
 
 
@@ -18,16 +18,14 @@ class Comment(BaseModel):
     body: str
 
 
-class DataLoader:
+class DataLoaderFromAPI:
     def __init__(
         self,
-        client: MongoClient,
+        db,
         url: str = "https://jsonplaceholder.typicode.com",
-        database: str = "task1",
     ):
-        self.client = client
         self.url = url
-        self.db = self.client.get_database(database)
+        self.db = db
         self.post_ids = []
 
     def __fetch_posts(self) -> list[Post] | None:
@@ -117,7 +115,6 @@ class DataLoader:
         except Exception as e:
             print(e)
 
-    # Task1
     def load_data_from_api(self):
         self.__insert_posts_and_user()
         self.__insert_comments_update_posts()
@@ -125,12 +122,8 @@ class DataLoader:
 
 
 if __name__ == "__main__":
-    from app.db.database import client
+    # Task1
+    from app.db.database import DB_TASK_ONE
 
-    data_loader = DataLoader(client)
+    data_loader = DataLoaderFromAPI(db=DB_TASK_ONE)
     data_loader.load_data_from_api()
-    # posts = data_loader.fetch_posts()
-    # print(posts)
-    # data_loader.insert_posts_and_user()
-    # comments = data_loader.fetch_comments()
-    # print(len(comments))

@@ -1,7 +1,7 @@
-from app.db.database import client
+from app.db.database import DB_TASK_ONE
 from app.models.api import UserPostCommentCount
 
-db = client.get_database("task1")
+db = DB_TASK_ONE
 
 
 def get_post_comment_counts(user_id: int) -> UserPostCommentCount | Exception:
