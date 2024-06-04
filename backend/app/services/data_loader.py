@@ -1,6 +1,7 @@
 import requests
 from pymongo import UpdateOne
 from pydantic import BaseModel
+import pandas as pd
 
 
 class Post(BaseModel):
@@ -121,9 +122,43 @@ class DataLoaderFromAPI:
         print("Data loaded successfully")
 
 
+def load_data_from_csv(
+    db,
+    url: str = "https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine1.csv",
+    skiprows=1,
+    sep: str = ";",
+    bath_size: int = 1000,
+):
+    try:
+        data = pd.read_csv(url, sep=sep, skiprows=skiprows)
+        data_dict = data.to_dict("records")
+        iterate = len(data_dict) // bath_size + 1
+        for i in range(iterate):
+            print(f"Loading data {i + 1}/{iterate}")
+            start = i * bath_size
+            end = (i + 1) * bath_size
+            db.turbine.insert_many(data_dict[start:end])
+        print(f"Data loaded successfully from {url}")
+    except Exception as e:
+        print(e)
+
+
 if __name__ == "__main__":
     # Task1
-    from app.db.database import DB_TASK_ONE
+    # from app.db.database import DB_TASK_ONE
 
-    data_loader = DataLoaderFromAPI(db=DB_TASK_ONE)
-    data_loader.load_data_from_api()
+    # data_loader = DataLoaderFromAPI(db=DB_TASK_ONE)
+    # data_loader.load_data_from_api()
+
+    # Task2
+    # from app.db.database import DB_TASK_TWO
+
+    # load_data_from_csv(
+    #     db=DB_TASK_TWO,
+    #     url="https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine1.csv",
+    # )
+    # load_data_from_csv(
+    #     db=DB_TASK_TWO,
+    #     url="https://nextcloud.turbit.com/s/G3bwdkrXx6Kmxs3/download/Turbine2.csv",
+    # )
+    pass
