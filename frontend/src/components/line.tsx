@@ -1,3 +1,5 @@
+'use client';
+import { lineChartData } from '@/FAKE_DATA';
 import { Line } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -7,6 +9,7 @@ import {
 	Title,
 	Tooltip,
 	Legend,
+	LinearScale,
 } from 'chart.js';
 
 ChartJS.register(
@@ -15,11 +18,12 @@ ChartJS.register(
 	LineElement,
 	Title,
 	Tooltip,
-	Legend
+	Legend,
+	LinearScale
 );
 
 export default function LineGraph() {
 	const options = {};
-	const data = {};
-	return <Line options={options} data={data} />;
+	// const data = {};
+	return <Line options={options} data={lineChartData} />;
 }
