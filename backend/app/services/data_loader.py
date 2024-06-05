@@ -125,11 +125,14 @@ class DataLoaderFromAPI:
 
 # Task2
 class DataLoaderFromCSV:
-    def __init__(self, db, url: str = "", skiprows=1, sep: str = ";"):
+    def __init__(
+        self, db, url: str = "", skiprows=1, sep: str = ";", turbine_id: int = 1
+    ):
         self.db = db
         self.url = url
         self.skiprows = skiprows
         self.sep = sep
+        self.turbine_id = turbine_id
 
         self.columns_mapping = {
             "                 ": "time",
@@ -190,6 +193,10 @@ class DataLoaderFromCSV:
                 pass
         return data
 
+    def __add_turbine_id(self, data: pd.DataFrame) -> pd.DataFrame:
+        data["turbine_id"] = self.turbine_id
+        return data
+
     def __load_data_to_db(self, data: pd.DataFrame) -> None:
         data_dict = data.to_dict("records")
         iterate = len(data_dict) // 1000 + 1
@@ -206,6 +213,7 @@ class DataLoaderFromCSV:
             return
         data = self.__rename_columns(data)
         data = self.__convert_types(data)
+        data = self.__add_turbine_id(data)
         self.__load_data_to_db(data)
 
 
@@ -217,14 +225,16 @@ if __name__ == "__main__":
     # data_loader.load_data_from_api()
 
     # Task2
-    # from app.db.database import DB_TASK_TWO
+    from app.db.database import DB_TASK_TWO
 
     # DataLoaderFromCSV(
     #     db=DB_TASK_TWO,
     #     url="https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine1.csv",
+    #     turbine_id=1,
     # ).load_data_from_csv()
-    # DataLoaderFromCSV(
-    #     db=DB_TASK_TWO,
-    #     url="https://nextcloud.turbit.com/s/G3bwdkrXx6Kmxs3/download/Turbine2.csv",
-    # ).load_data_from_csv()
+    DataLoaderFromCSV(
+        db=DB_TASK_TWO,
+        url="https://nextcloud.turbit.com/s/G3bwdkrXx6Kmxs3/download/Turbine2.csv",
+        turbine_id=2,
+    ).load_data_from_csv()
     pass
