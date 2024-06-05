@@ -19,6 +19,7 @@ class Comment(BaseModel):
     body: str
 
 
+# Task1
 class DataLoaderFromAPI:
     def __init__(
         self,
@@ -122,25 +123,90 @@ class DataLoaderFromAPI:
         print("Data loaded successfully")
 
 
-def load_data_from_csv(
-    db,
-    url: str = "https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine1.csv",
-    skiprows=1,
-    sep: str = ";",
-    bath_size: int = 1000,
-):
-    try:
-        data = pd.read_csv(url, sep=sep, skiprows=skiprows)
+# Task2
+class DataLoaderFromCSV:
+    def __init__(self, db, url: str = "", skiprows=1, sep: str = ";"):
+        self.db = db
+        self.url = url
+        self.skiprows = skiprows
+        self.sep = sep
+
+        self.columns_mapping = {
+            "                 ": "time",
+            "   m/s": "wind",
+            "  rpm": "rotor",
+            "      kW": "leistung",
+            "     °": "azimut",
+            "       kWh": "prod_1",
+            "       kWh.1": "prod_2",
+            "       h": "btr_std_1",
+            "       h.1": "btr_std_2",
+            "   °C": "gen1",
+            "   °C.1": "lager",
+            "   °C.2": "aussen",
+            "   °C.3": "getr_t",
+            "       ": "status",
+            "    V": "spann",
+            "    V.1": "spann_1",
+            "    V.2": "spann_2",
+            "     A": "strom",
+            "     A.1": "strom_1",
+            "     A.2": "strom_2",
+            "     ": "cos_ph",
+            "       kWh.2": "abgabe",
+            "       kWh.3": "bezug",
+            "       Imp": "kh_zahl_1",
+            "       Imp.1": "kh_zahl_2",
+            "       Bit": "kh_digi_e",
+            "       Bit.1": "kh_digi_i",
+            "          ": "kh_ana_1",
+            "          .1": "kh_ana_2",
+            "          .2": "kh_ana_3",
+            "          .3": "kh_ana_4",
+        }
+
+    def __read_csv(self) -> pd.DataFrame | None:
+        try:
+            data = pd.read_csv(self.url, sep=self.sep, skiprows=self.skiprows)
+            return data
+        except Exception as e:
+            print(e)
+            return None
+
+    def __rename_columns(self, data: pd.DataFrame) -> pd.DataFrame:
+        data = data.rename(columns=self.columns_mapping)
+        return data
+
+    def __convert_types(self, data: pd.DataFrame) -> pd.DataFrame:
+        for col in data.columns:
+            try:
+                if col in ["time"]:
+                    data[col] = pd.to_datetime(data[col], format="%d.%m.%Y, %H:%M")
+                for col in data.columns:
+                    if data[col].dtype == "object":
+                        data[col] = data[col].str.replace(",", ".").astype(float)
+                return data
+            except:
+                pass
+        return data
+
+    def __load_data_to_db(self, data: pd.DataFrame) -> None:
         data_dict = data.to_dict("records")
-        iterate = len(data_dict) // bath_size + 1
+        iterate = len(data_dict) // 1000 + 1
         for i in range(iterate):
             print(f"Loading data {i + 1}/{iterate}")
-            start = i * bath_size
-            end = (i + 1) * bath_size
-            db.turbine.insert_many(data_dict[start:end])
-        print(f"Data loaded successfully from {url}")
-    except Exception as e:
-        print(e)
+            start = i * 1000
+            end = (i + 1) * 1000
+            self.db.turbine.insert_many(data_dict[start:end])
+        print(f"Data loaded successfully from {self.url}")
+
+    def load_data_from_csv(self) -> None:
+        data = self.__read_csv()
+        if data is None:
+            return
+        data = self.__rename_columns(data)
+        data = self.__convert_types(data)
+        self.__load_data_to_db(data)
 
 
 if __name__ == "__main__":
@@ -153,12 +219,12 @@ if __name__ == "__main__":
     # Task2
     # from app.db.database import DB_TASK_TWO
 
-    # load_data_from_csv(
+    # DataLoaderFromCSV(
     #     db=DB_TASK_TWO,
     #     url="https://nextcloud.turbit.com/s/GTbSwKkMnFrKC7A/download/Turbine1.csv",
-    # )
-    # load_data_from_csv(
+    # ).load_data_from_csv()
+    # DataLoaderFromCSV(
     #     db=DB_TASK_TWO,
     #     url="https://nextcloud.turbit.com/s/G3bwdkrXx6Kmxs3/download/Turbine2.csv",
-    # )
+    # ).load_data_from_csv()
     pass
