@@ -38,7 +38,7 @@ def read_user_stats(user_id: int):
 def read_turbine_data(turbine_id: int, start_time: datetime, end_time: datetime):
     try:
         res = get_turbine_data(turbine_id, start_time, end_time)
-        logging.info(res)
+        logging.info(f"turbine_id: {turbine_id}, start_time: {start_time}, end_time: {end_time}, total_records: {len(res)}") # type: ignore
         return res
     except Exception as e:
         logging.error(e)
