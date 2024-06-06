@@ -50,11 +50,11 @@ export default function Home() {
 						</Select>
 					</li>
 					<li className='pb-4'>
-						<div className='flex flex-col '>
+						<div className='flex flex-col'>
 							<label className='text-input'>Start Date</label>
 							{/* this should be between 01.01.2016 00:00 and 01.04.2016 00:00 */}
 							<DatePicker
-								className='appearance-none boarder rounded py-3 px-2'
+								className='appearance-none boarder rounded py-3 px-2 w-full'
 								showTimeSelect
 								minDate={new Date('2016-01-01')}
 								maxDate={new Date('2016-04-01')}
@@ -69,7 +69,7 @@ export default function Home() {
 							<label className='text-input'>End Date</label>
 							{/* this should be between 01.01.2016 00:00 and 01.04.2016 00:00 */}
 							<DatePicker
-								className='appearance-none boarder rounded py-3 px-2'
+								className='appearance-none boarder rounded py-3 px-2 w-full'
 								showTimeSelect
 								minDate={new Date('2016-01-01')}
 								maxDate={new Date('2016-04-01')}
