@@ -1,6 +1,5 @@
 'use client';
 
-import { DateTimePicker } from '@/components/ui/date-time-picker/date-time-picker';
 import {
 	Select,
 	SelectContent,
@@ -11,16 +10,23 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default function Home() {
 	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
 		null
 	);
+	const [selectedStartDate, setSelectedStartDate] = useState<Date>(
+		new Date('2016-01-01 00:00')
+	);
+	const [selectedEndDate, setSelectedEndDate] = useState<Date>(
+		new Date('2016-01-01 00:00')
+	);
 
 	const handleTurbineID = (value: string) => {
 		setSelectedTurbineID(parseInt(value));
 	};
-	console.log(selectedTurbineID);
 
 	return (
 		<div className='flex h-screen'>
@@ -44,12 +50,34 @@ export default function Home() {
 						</Select>
 					</li>
 					<li className='pb-4'>
-						<span className='text-input'>Start Date</span>
-						<DateTimePicker granularity={'minute'} />
+						<div className='flex flex-col '>
+							<label className='text-input'>Start Date</label>
+							{/* this should be between 01.01.2016 00:00 and 01.04.2016 00:00 */}
+							<DatePicker
+								className='appearance-none boarder rounded py-3 px-2'
+								showTimeSelect
+								minDate={new Date('2016-01-01')}
+								maxDate={new Date('2016-04-01')}
+								selected={selectedStartDate}
+								onChange={date => setSelectedStartDate(date as Date)}
+								dateFormat='dd/MM/yyyy HH:mm'
+							/>
+						</div>
 					</li>
 					<li>
-						<span className='text-input'>End Date</span>
-						<DateTimePicker granularity={'minute'} />
+						<div className='flex flex-col '>
+							<label className='text-input'>End Date</label>
+							{/* this should be between 01.01.2016 00:00 and 01.04.2016 00:00 */}
+							<DatePicker
+								className='appearance-none boarder rounded py-3 px-2'
+								showTimeSelect
+								minDate={new Date('2016-01-01')}
+								maxDate={new Date('2016-04-01')}
+								selected={selectedEndDate}
+								onChange={date => setSelectedEndDate(date as Date)}
+								dateFormat='dd/MM/yyyy HH:mm'
+							/>
+						</div>
 					</li>
 				</ul>
 			</div>
