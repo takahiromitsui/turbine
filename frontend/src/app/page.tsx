@@ -9,15 +9,25 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { useState } from 'react';
 
 export default function Home() {
+	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
+		null
+	);
+
+	const handleTurbineID = (value: string) => {
+		setSelectedTurbineID(parseInt(value));
+	};
+	console.log(selectedTurbineID);
+
 	return (
 		<div className='flex h-screen'>
 			<div className='w-1/4 bg-primary pt-4 pl-4 pr-4'>
 				{/*Sidebar content*/}
 				<h2 className='text-white text-2xl font-bold pb-4'>Turbine</h2>
 				<ul>
-					<Select>
+					<Select onValueChange={handleTurbineID}>
 						<SelectTrigger>
 							<SelectValue placeholder='Select a Turbine' />
 						</SelectTrigger>
