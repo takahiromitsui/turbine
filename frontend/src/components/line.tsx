@@ -1,5 +1,4 @@
 'use client';
-import { lineChartData } from '@/FAKE_DATA';
 import { Line } from 'react-chartjs-2';
 import {
 	Chart as ChartJS,
@@ -22,8 +21,23 @@ ChartJS.register(
 	LinearScale
 );
 
-export default function LineGraph() {
+const emptyData = {
+	// x-axis
+	labels: [],
+	datasets: [
+		{
+			label: 'power(Leistung)',
+			data: [],
+			borderColor: 'rgb(75,192,192)',
+		},
+	],
+};
+
+export default function LineGraph({ data }: { data: any }) {
 	const options = {};
-	// const data = {};
-	return <Line options={options} data={lineChartData} />;
+	if (data) {
+		return <Line options={options} data={data} />;
+	} else {
+		return <Line options={options} data={emptyData} />;
+	}
 }

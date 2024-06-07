@@ -1,5 +1,6 @@
 'use client';
 
+import LineGraph from '@/components/line';
 import { Button } from '@/components/ui/button';
 import {
 	Select,
@@ -25,12 +26,29 @@ type TurbineData = {
 async function fetchTurbineData(data: TurbineData) {
 	const { turbineID, startDate, endDate } = data;
 	// Create new Date objects adjusted to UTC
-	const utcStartDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes(), startDate.getSeconds()));
-	const utcEndDate = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endDate.getHours(), endDate.getMinutes(), endDate.getSeconds()));
+	const utcStartDate = new Date(
+		Date.UTC(
+			startDate.getFullYear(),
+			startDate.getMonth(),
+			startDate.getDate(),
+			startDate.getHours(),
+			startDate.getMinutes(),
+			startDate.getSeconds()
+		)
+	);
+	const utcEndDate = new Date(
+		Date.UTC(
+			endDate.getFullYear(),
+			endDate.getMonth(),
+			endDate.getDate(),
+			endDate.getHours(),
+			endDate.getMinutes(),
+			endDate.getSeconds()
+		)
+	);
 
 	const formattedStartDate = utcStartDate.toISOString();
 	const formattedEndDate = utcEndDate.toISOString();
-	console.log(formattedStartDate, formattedEndDate);
 	const url = `${BASE_URL}/task2/turbines/${turbineID}/?start_time=${formattedStartDate}&end_time=${formattedEndDate}`;
 	const response = await fetch(url, {
 		method: 'GET',
@@ -50,6 +68,18 @@ export default function Home() {
 		new Date('2016-01-01 00:00')
 	);
 
+	const [turbineData, setTurbineData] = useState<any>({
+		// x-axis
+		labels: [],
+		datasets: [
+			{
+				label: 'power(Leistung)',
+				data: [],
+				borderColor: 'rgb(75,192,192)',
+			},
+		],
+	});
+
 	const handleTurbineID = (value: string) => {
 		setSelectedTurbineID(parseInt(value));
 	};
@@ -60,7 +90,24 @@ export default function Home() {
 			startDate: selectedStartDate,
 			endDate: selectedEndDate,
 		});
-		console.log(res);
+		const label: number[] = [];
+		const data: number[] = [];
+		if (res) {
+			res.forEach((item: any) => {
+				label.push(item.wind);
+				data.push(item.leistung);
+			});
+			setTurbineData({
+				labels: label,
+				datasets: [
+					{
+						label: 'power(Leistung)',
+						data: data,
+						borderColor: 'rgb(75,192,192)',
+					},
+				],
+			});
+		}
 	};
 
 	return (
@@ -123,7 +170,10 @@ export default function Home() {
 			</div>
 			<div className='flex-1 bg-background pt-4 pl-4 pr-4'>
 				{/*Main content*/}
-				<h1 className='text-4xl font-bold mb-4'>Main Content: Graph Here</h1>
+				<h1 className='text-4xl font-bold mb-4'>Graph</h1>
+				<div className='px-4'>
+					<LineGraph data={turbineData} />
+				</div>
 			</div>
 		</div>
 	);
