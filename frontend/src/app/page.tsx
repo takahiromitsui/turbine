@@ -24,8 +24,13 @@ type TurbineData = {
 
 async function fetchTurbineData(data: TurbineData) {
 	const { turbineID, startDate, endDate } = data;
-	const formattedStartDate = startDate.toISOString();
-	const formattedEndDate = endDate.toISOString();
+	// Create new Date objects adjusted to UTC
+	const utcStartDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes(), startDate.getSeconds()));
+	const utcEndDate = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endDate.getHours(), endDate.getMinutes(), endDate.getSeconds()));
+
+	const formattedStartDate = utcStartDate.toISOString();
+	const formattedEndDate = utcEndDate.toISOString();
+	console.log(formattedStartDate, formattedEndDate);
 	const url = `${BASE_URL}/task2/turbines/${turbineID}/?start_time=${formattedStartDate}&end_time=${formattedEndDate}`;
 	const response = await fetch(url, {
 		method: 'GET',
