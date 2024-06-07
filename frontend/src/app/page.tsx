@@ -18,7 +18,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 const BASE_URL = 'http://localhost:8000';
 
 type TurbineData = {
-	turbineID: number;
+	turbineID: number | null;
 	startDate: Date;
 	endDate: Date;
 };
@@ -49,6 +49,9 @@ async function fetchTurbineData(data: TurbineData) {
 
 	const formattedStartDate = utcStartDate.toISOString();
 	const formattedEndDate = utcEndDate.toISOString();
+	if (!turbineID) {
+		return;
+	}
 	const url = `${BASE_URL}/task2/turbines/${turbineID}/?start_time=${formattedStartDate}&end_time=${formattedEndDate}`;
 	const response = await fetch(url, {
 		method: 'GET',
@@ -60,7 +63,9 @@ async function fetchTurbineData(data: TurbineData) {
 }
 
 export default function Home() {
-	const [selectedTurbineID, setSelectedTurbineID] = useState<number>(1);
+	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
+		null
+	);
 	const [selectedStartDate, setSelectedStartDate] = useState<Date>(
 		new Date('2016-01-01 00:00')
 	);
@@ -69,15 +74,33 @@ export default function Home() {
 	);
 
 	const [turbineData, setTurbineData] = useState<any>({
-		// x-axis
-		labels: [],
-		datasets: [
-			{
-				label: 'power(Leistung)',
-				data: [],
-				borderColor: 'rgb(75,192,192)',
+		data: {
+			// x-axis
+			labels: [],
+			datasets: [
+				{
+					label: 'power(Leistung)',
+					data: [],
+					borderColor: 'rgb(75,192,192)',
+				},
+			],
+		},
+		options: {
+			scales: {
+				x: {
+					title: {
+						display: true,
+						text: 'Wind (m/s)',
+					},
+				},
+				y: {
+					title: {
+						display: true,
+						text: 'Power/Leistung (kw)',
+					},
+				},
 			},
-		],
+		},
 	});
 
 	const handleTurbineID = (value: string) => {
@@ -98,14 +121,32 @@ export default function Home() {
 				data.push(item.leistung);
 			});
 			setTurbineData({
-				labels: label,
-				datasets: [
-					{
-						label: 'power(Leistung)',
-						data: data,
-						borderColor: 'rgb(75,192,192)',
+				data: {
+					labels: label,
+					datasets: [
+						{
+							label: 'power(Leistung)',
+							data: data,
+							borderColor: 'rgb(75,192,192)',
+						},
+					],
+				},
+				options: {
+					scales: {
+						x: {
+							title: {
+								display: true,
+								text: 'Wind (m/s)',
+							},
+						},
+						y: {
+							title: {
+								display: true,
+								text: 'Power/Leistung (kw)',
+							},
+						},
 					},
-				],
+				},
 			});
 		}
 	};
@@ -172,7 +213,7 @@ export default function Home() {
 				{/*Main content*/}
 				<h1 className='text-4xl font-bold mb-4'>Graph</h1>
 				<div className='px-4'>
-					<LineGraph data={turbineData} />
+					<LineGraph data={turbineData.data} options={turbineData.options}/>
 				</div>
 			</div>
 		</div>

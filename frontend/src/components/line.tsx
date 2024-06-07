@@ -23,21 +23,37 @@ ChartJS.register(
 
 const emptyData = {
 	// x-axis
-	labels: [],
+	data:{labels: [],
 	datasets: [
 		{
 			label: 'power(Leistung)',
 			data: [],
 			borderColor: 'rgb(75,192,192)',
 		},
-	],
+	],},
+	options: {
+		scales: {
+			x: {
+				title: {
+					display: true,
+					text: 'Wind (m/s)',
+				},
+			},
+			y: {
+				title: {
+					display: true,
+					text: 'Power/Leistung (kw)',
+				},
+			},
+		},
+	},
 };
 
-export default function LineGraph({ data }: { data: any }) {
-	const options = {};
+export default function LineGraph({ data, options }: { data: any , options: any}) {
+	
 	if (data) {
 		return <Line options={options} data={data} />;
 	} else {
-		return <Line options={options} data={emptyData} />;
+		return <Line options={emptyData.options} data={emptyData.data} />;
 	}
 }
