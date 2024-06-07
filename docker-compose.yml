@@ -17,6 +17,7 @@ services:
       - ./backend:/app
     env_file:
       - ./env/backend.env
+    # command: ["python", "db/initialize_db.py"]
     depends_on:
       - mongodb
     
