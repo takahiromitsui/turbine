@@ -14,10 +14,30 @@ import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+const BASE_URL = 'http://localhost:8000';
+
+type TurbineData = {
+	turbineID: number;
+	startDate: Date;
+	endDate: Date;
+};
+
+async function fetchTurbineData(data: TurbineData) {
+	const { turbineID, startDate, endDate } = data;
+	const formattedStartDate = startDate.toISOString();
+	const formattedEndDate = endDate.toISOString();
+	const url = `${BASE_URL}/task2/turbines/${turbineID}/?start_time=${formattedStartDate}&end_time=${formattedEndDate}`;
+	const response = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+	return response.json();
+}
+
 export default function Home() {
-	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
-		null
-	);
+	const [selectedTurbineID, setSelectedTurbineID] = useState<number>(1);
 	const [selectedStartDate, setSelectedStartDate] = useState<Date>(
 		new Date('2016-01-01 00:00')
 	);
@@ -29,14 +49,14 @@ export default function Home() {
 		setSelectedTurbineID(parseInt(value));
 	};
 
-	const handleOnClick = () => {
-		const data = {
+	const handleOnClick = async () => {
+		const res = await fetchTurbineData({
 			turbineID: selectedTurbineID,
 			startDate: selectedStartDate,
 			endDate: selectedEndDate,
-		}
-		console.log(data);
-	}
+		});
+		console.log(res);
+	};
 
 	return (
 		<div className='flex h-screen'>
@@ -90,9 +110,9 @@ export default function Home() {
 						</div>
 					</li>
 					<li>
-						<Button 
-						onClick={handleOnClick}
-						variant={'secondary'}>Generate Graph</Button>
+						<Button onClick={handleOnClick} variant={'secondary'}>
+							Generate Graph
+						</Button>
 					</li>
 				</ul>
 			</div>
