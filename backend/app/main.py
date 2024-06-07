@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
 from datetime import datetime
@@ -16,6 +17,19 @@ app = FastAPI(
 )
 
 logging.basicConfig(level=logging.INFO)
+
+origins =[
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -34,7 +48,7 @@ def read_user_stats(user_id: int):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.get("/task2/turbine/{turbine_id}", response_model=list[Turbine])
+@app.get("/task2/turbines/{turbine_id}", response_model=list[Turbine])
 def read_turbine_data(turbine_id: int, start_time: datetime, end_time: datetime):
     try:
         res = get_turbine_data(turbine_id, start_time, end_time)
