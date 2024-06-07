@@ -23,14 +23,16 @@ ChartJS.register(
 
 const emptyData = {
 	// x-axis
-	data:{labels: [],
-	datasets: [
-		{
-			label: 'power(Leistung)',
-			data: [],
-			borderColor: 'rgb(75,192,192)',
-		},
-	],},
+	data: {
+		labels: [],
+		datasets: [
+			{
+				label: 'Power(Leistung): Turbine ID: , start - end',
+				data: [],
+				borderColor: 'rgb(75,192,192)',
+			},
+		],
+	},
 	options: {
 		scales: {
 			x: {
@@ -49,8 +51,13 @@ const emptyData = {
 	},
 };
 
-export default function LineGraph({ data, options }: { data: any , options: any}) {
-	
+export default function LineGraph({
+	data,
+	options,
+}: {
+	data: any;
+	options: any;
+}) {
 	if (data) {
 		return <Line options={options} data={data} />;
 	} else {

@@ -79,7 +79,7 @@ export default function Home() {
 			labels: [],
 			datasets: [
 				{
-					label: 'power(Leistung)',
+					label: 'Power(Leistung): Turbine ID: , start - end',
 					data: [],
 					borderColor: 'rgb(75,192,192)',
 				},
@@ -120,12 +120,30 @@ export default function Home() {
 				label.push(item.wind);
 				data.push(item.leistung);
 			});
+			//'dd/MM/yyyy HH:mm'
+			const formattedStartDate = selectedStartDate.toLocaleString('de-DE', {
+				day: '2-digit',
+				month: '2-digit',
+				year: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+			});
+			const formattedEndDate = selectedEndDate.toLocaleString('de-DE', {
+				day: '2-digit',
+				month: '2-digit',
+				year: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+			});
+
 			setTurbineData({
 				data: {
 					labels: label,
 					datasets: [
 						{
-							label: 'power(Leistung)',
+							// time range and power
+							// should be like this: Power(Leistung): 01.01.2016 00:00 - 01.04.2016 00:00
+							label: ` Power(Leistung): Turbine ID: ${selectedTurbineID}, ${formattedStartDate} - ${formattedEndDate}`,
 							data: data,
 							borderColor: 'rgb(75,192,192)',
 						},
@@ -211,10 +229,8 @@ export default function Home() {
 			</div>
 			<div className='flex-1 bg-background pt-4 pl-4 pr-4'>
 				{/*Main content*/}
-				<h1 className='text-4xl font-bold mb-4'>Graph</h1>
-				<div className='px-4'>
-					<LineGraph data={turbineData.data} options={turbineData.options}/>
-				</div>
+				<h1 className='pl-4 text-4xl font-bold mb-4'>Graph</h1>
+				<LineGraph data={turbineData.data} options={turbineData.options} />
 			</div>
 		</div>
 	);
