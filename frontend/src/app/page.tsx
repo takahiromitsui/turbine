@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import {
 	Select,
 	SelectContent,
@@ -27,6 +28,15 @@ export default function Home() {
 	const handleTurbineID = (value: string) => {
 		setSelectedTurbineID(parseInt(value));
 	};
+
+	const handleOnClick = () => {
+		const data = {
+			turbineID: selectedTurbineID,
+			startDate: selectedStartDate,
+			endDate: selectedEndDate,
+		}
+		console.log(data);
+	}
 
 	return (
 		<div className='flex h-screen'>
@@ -64,7 +74,7 @@ export default function Home() {
 							/>
 						</div>
 					</li>
-					<li>
+					<li className='pb-8'>
 						<div className='flex flex-col '>
 							<label className='text-input'>End Date</label>
 							{/* this should be between 01.01.2016 00:00 and 01.04.2016 00:00 */}
@@ -78,6 +88,11 @@ export default function Home() {
 								dateFormat='dd/MM/yyyy HH:mm'
 							/>
 						</div>
+					</li>
+					<li>
+						<Button 
+						onClick={handleOnClick}
+						variant={'secondary'}>Generate Graph</Button>
 					</li>
 				</ul>
 			</div>
