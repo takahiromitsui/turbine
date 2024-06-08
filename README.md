@@ -39,5 +39,9 @@ To run this project locally, follow these steps:
     - React App: Open your browser and go to http://localhost:3000.
     - FastAPI Endpoint: Open your browser and go to http://localhost:8000/docs to view the API documentation and test endpoints.
 
+   Example:
+   <img width="1352" alt="Screenshot 2024-06-08 at 14 38 18" src="https://github.com/takahiromitsui/turbine/assets/78789212/181b15dd-945b-4180-a1d1-929c760c62d7">
+
+
 
 
