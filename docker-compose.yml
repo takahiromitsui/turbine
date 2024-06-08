@@ -4,20 +4,22 @@ services:
     image: "mongo"
     volumes:
       - data:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: admin
-    #   MONGO_INITDB_ROOT_PASSWORD: password
-    env_file:
-      - ./env/mongo.env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    # env_file:
+    #   - ./env/mongo.env
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-    env_file:
-      - ./env/backend.env
-    # command: ["python", "db/initialize_db.py"]
+    environment:
+      MONGO_USER: admin
+      MONGO_PWD: password
+    # env_file:
+    #   - ./env/backend.env
     depends_on:
       - mongodb
     

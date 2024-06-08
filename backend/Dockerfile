@@ -21,5 +21,9 @@ COPY . .
 # Expose the port your app runs on
 EXPOSE 8000
 
+# Env
+ENV MONGO_USER=admin
+ENV MONGO_PWD=password
+
 # Specify the command to run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -4,12 +4,12 @@ from contextlib import asynccontextmanager
 import uvicorn
 import logging
 from datetime import datetime
-import pymongo
+from pymongo.errors import ServerSelectionTimeoutError, OperationFailure
 
 from app.services import json_placeholder
 from app.models.api import UserPostCommentCount
 from app.models.database import Turbine
-from app.db.database import client
+from app.db.database import client, connection_string
 from app.services.turbine import get_turbine_data
 
 logging.basicConfig(level=logging.INFO)
@@ -18,11 +18,15 @@ logging.basicConfig(level=logging.INFO)
 async def lifespan(app: FastAPI):
     # Check if the database is connected
     try:
+        logging.info(f"Attempting to connect to database {connection_string}")
         client.server_info()
-        logging.info("Database connected")
-    except pymongo.errors.ServerSelectionTimeoutError as err: # type: ignore
+        logging.info(f"Database connected {connection_string}")
+    except (ServerSelectionTimeoutError, OperationFailure) as err: # type: ignore
         logging.error(err)
-        raise Exception("Database not connected")  
+        if isinstance(err, OperationFailure):
+            raise Exception("Database authentication failed")
+        else:
+            raise Exception("Database not connected")  
     yield
 
       
