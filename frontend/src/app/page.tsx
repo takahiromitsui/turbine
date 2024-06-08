@@ -3,6 +3,39 @@ import { fetchTurbineData } from '@/lib/fetchTurbineData';
 import Sidebar from '@/components/sidebar';
 import LineGraph from '@/components/line';
 import { useState } from 'react';
+import { Line } from 'react-chartjs-2';
+
+const chartOptions = {
+	scales: {
+		x: {
+			title: {
+				display: true,
+				text: 'Wind (m/s)',
+			},
+		},
+		y: {
+			title: {
+				display: true,
+				text: 'Power/Leistung (kw)',
+			},
+		},
+	},
+};
+
+const emptyData = {
+	// x-axis
+	data: {
+		labels: [],
+		datasets: [
+			{
+				label: 'Power(Leistung): Turbine ID: , start - end',
+				data: [],
+				borderColor: 'rgb(75,192,192)',
+			},
+		],
+	},
+	options: chartOptions,
+};
 
 export default function Home() {
 	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
@@ -15,35 +48,7 @@ export default function Home() {
 		new Date('2016-01-01 00:00')
 	);
 
-	const [turbineData, setTurbineData] = useState<any>({
-		data: {
-			// x-axis
-			labels: [],
-			datasets: [
-				{
-					label: 'Power(Leistung): Turbine ID: , start - end',
-					data: [],
-					borderColor: 'rgb(75,192,192)',
-				},
-			],
-		},
-		options: {
-			scales: {
-				x: {
-					title: {
-						display: true,
-						text: 'Wind (m/s)',
-					},
-				},
-				y: {
-					title: {
-						display: true,
-						text: 'Power/Leistung (kw)',
-					},
-				},
-			},
-		},
-	});
+	const [turbineData, setTurbineData] = useState<any>(emptyData);
 
 	const handleTurbineID = (value: string) => {
 		setSelectedTurbineID(parseInt(value));
@@ -91,22 +96,7 @@ export default function Home() {
 						},
 					],
 				},
-				options: {
-					scales: {
-						x: {
-							title: {
-								display: true,
-								text: 'Wind (m/s)',
-							},
-						},
-						y: {
-							title: {
-								display: true,
-								text: 'Power/Leistung (kw)',
-							},
-						},
-					},
-				},
+				options: chartOptions,
 			});
 		}
 	};
@@ -126,7 +116,11 @@ export default function Home() {
 			<div className='flex-1 bg-background pt-4 pl-4 pr-4'>
 				{/*Main content*/}
 				<h1 className='pl-4 text-4xl font-bold mb-4'>Graph</h1>
-				<LineGraph data={turbineData.data} options={turbineData.options} />
+				{turbineData ? (
+					<LineGraph data={turbineData.data} options={turbineData.options} />
+				) : (
+					<LineGraph data={emptyData.data} options={emptyData.options} />
+				)}
 			</div>
 		</div>
 	);
