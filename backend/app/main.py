@@ -11,8 +11,10 @@ from app.models.api import UserPostCommentCount
 from app.models.database import Turbine
 from app.db.database import client, connection_string
 from app.services.turbine import get_turbine_data
+from app.db.initialize_db import initialize_db
 
 logging.basicConfig(level=logging.INFO)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -21,15 +23,19 @@ async def lifespan(app: FastAPI):
         logging.info(f"Attempting to connect to database {connection_string}")
         client.server_info()
         logging.info(f"Database connected {connection_string}")
-    except (ServerSelectionTimeoutError, OperationFailure) as err: # type: ignore
+        # Initialize the database
+        logging.info("Initializing database")
+        initialize_db()
+
+    except (ServerSelectionTimeoutError, OperationFailure) as err:  # type: ignore
         logging.error(err)
         if isinstance(err, OperationFailure):
             raise Exception("Database authentication failed")
         else:
-            raise Exception("Database not connected")  
+            raise Exception("Database not connected")
     yield
 
-      
+
 app = FastAPI(
     title="Turbit API",
     description="Turbit API",
@@ -38,7 +44,7 @@ app = FastAPI(
 )
 
 
-origins =[
+origins = [
     "http://localhost",
     "http://localhost:3000",
 ]
@@ -72,7 +78,7 @@ def read_user_stats(user_id: int):
 def read_turbine_data(turbine_id: int, start_time: datetime, end_time: datetime):
     try:
         res = get_turbine_data(turbine_id, start_time, end_time)
-        logging.info(f"turbine_id: {turbine_id}, start_time: {start_time}, end_time: {end_time}, total_records: {len(res)}") # type: ignore
+        logging.info(f"turbine_id: {turbine_id}, start_time: {start_time}, end_time: {end_time}, total_records: {len(res)}")  # type: ignore
         return res
     except Exception as e:
         logging.error(e)
