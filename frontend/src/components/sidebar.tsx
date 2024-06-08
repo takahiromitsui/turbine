@@ -29,8 +29,7 @@ export default function Sidebar({
 	setSelectedEndDate,
 }: Props) {
 	return (
-		<div className='w-1/4 bg-primary pt-4 pl-4 pr-4'>
-			{/*Sidebar content*/}
+		<>
 			<h2 className='text-input text-2xl font-bold pb-8'>Turbine</h2>
 			<ul>
 				<li className='pb-24'>
@@ -84,6 +83,6 @@ export default function Sidebar({
 					</Button>
 				</li>
 			</ul>
-		</div>
+		</>
 	);
 }
