@@ -1,41 +1,9 @@
 'use client';
 import { fetchTurbineData } from '@/lib/fetchTurbineData';
+import { chartOptions, emptyData } from '@/lib/chartData';
 import Sidebar from '@/components/sidebar';
 import LineGraph from '@/components/line';
 import { useState } from 'react';
-import { Line } from 'react-chartjs-2';
-
-const chartOptions = {
-	scales: {
-		x: {
-			title: {
-				display: true,
-				text: 'Wind (m/s)',
-			},
-		},
-		y: {
-			title: {
-				display: true,
-				text: 'Power/Leistung (kw)',
-			},
-		},
-	},
-};
-
-const emptyData = {
-	// x-axis
-	data: {
-		labels: [],
-		datasets: [
-			{
-				label: 'Power(Leistung): Turbine ID: , start - end',
-				data: [],
-				borderColor: 'rgb(75,192,192)',
-			},
-		],
-	},
-	options: chartOptions,
-};
 
 export default function Home() {
 	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
