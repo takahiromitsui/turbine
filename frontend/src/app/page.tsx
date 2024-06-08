@@ -1,54 +1,8 @@
 'use client';
+import { fetchTurbineData } from '@/lib/fetchTurbineData';
 import Sidebar from '@/components/sidebar';
 import LineGraph from '@/components/line';
 import { useState } from 'react';
-
-const BASE_URL = 'http://localhost:8000';
-
-type TurbineData = {
-	turbineID: number | null;
-	startDate: Date;
-	endDate: Date;
-};
-
-async function fetchTurbineData(data: TurbineData) {
-	const { turbineID, startDate, endDate } = data;
-	// Create new Date objects adjusted to UTC
-	const utcStartDate = new Date(
-		Date.UTC(
-			startDate.getFullYear(),
-			startDate.getMonth(),
-			startDate.getDate(),
-			startDate.getHours(),
-			startDate.getMinutes(),
-			startDate.getSeconds()
-		)
-	);
-	const utcEndDate = new Date(
-		Date.UTC(
-			endDate.getFullYear(),
-			endDate.getMonth(),
-			endDate.getDate(),
-			endDate.getHours(),
-			endDate.getMinutes(),
-			endDate.getSeconds()
-		)
-	);
-
-	const formattedStartDate = utcStartDate.toISOString();
-	const formattedEndDate = utcEndDate.toISOString();
-	if (!turbineID) {
-		return;
-	}
-	const url = `${BASE_URL}/task2/turbines/${turbineID}/?start_time=${formattedStartDate}&end_time=${formattedEndDate}`;
-	const response = await fetch(url, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	});
-	return response.json();
-}
 
 export default function Home() {
 	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
