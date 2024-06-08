@@ -1,4 +1,5 @@
 'use client';
+import { extractDataFromResponse, formatDate } from '@/lib/utils';
 import { fetchTurbineData } from '@/lib/fetchTurbineData';
 import { chartOptions, emptyData } from '@/lib/chartData';
 import Sidebar from '@/components/sidebar';
@@ -28,28 +29,10 @@ export default function Home() {
 			startDate: selectedStartDate,
 			endDate: selectedEndDate,
 		});
-		const label: number[] = [];
-		const data: number[] = [];
 		if (res) {
-			res.forEach((item: any) => {
-				label.push(item.wind);
-				data.push(item.leistung);
-			});
-			//'dd/MM/yyyy HH:mm'
-			const formattedStartDate = selectedStartDate.toLocaleString('de-DE', {
-				day: '2-digit',
-				month: '2-digit',
-				year: 'numeric',
-				hour: '2-digit',
-				minute: '2-digit',
-			});
-			const formattedEndDate = selectedEndDate.toLocaleString('de-DE', {
-				day: '2-digit',
-				month: '2-digit',
-				year: 'numeric',
-				hour: '2-digit',
-				minute: '2-digit',
-			});
+			const { label, data } = extractDataFromResponse(res);
+			const formattedStartDate = formatDate(selectedStartDate);
+			const formattedEndDate = formatDate(selectedEndDate);
 
 			setTurbineData({
 				data: {
@@ -82,7 +65,6 @@ export default function Home() {
 				/>
 			</div>
 			<div className='flex-1 bg-background pt-4 pl-4 pr-4'>
-				{/*Main content*/}
 				<h1 className='pl-4 text-4xl font-bold mb-4'>Graph</h1>
 				{turbineData ? (
 					<LineGraph data={turbineData.data} options={turbineData.options} />
