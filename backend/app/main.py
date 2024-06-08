@@ -1,22 +1,38 @@
-from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 import uvicorn
 import logging
 from datetime import datetime
+import pymongo
 
 from app.services import json_placeholder
 from app.models.api import UserPostCommentCount
 from app.models.database import Turbine
+from app.db.database import client
 from app.services.turbine import get_turbine_data
 
+logging.basicConfig(level=logging.INFO)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Check if the database is connected
+    try:
+        client.server_info()
+        logging.info("Database connected")
+    except pymongo.errors.ServerSelectionTimeoutError as err: # type: ignore
+        logging.error(err)
+        raise Exception("Database not connected")  
+    yield
+
+      
 app = FastAPI(
     title="Turbit API",
     description="Turbit API",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
-logging.basicConfig(level=logging.INFO)
 
 origins =[
     "http://localhost",
