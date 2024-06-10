@@ -8,6 +8,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { Toaster } from '@/components/ui/toaster';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -85,6 +86,7 @@ export default function Sidebar({
 					</Button>
 				</li>
 			</ul>
+			<Toaster />
 		</>
 	);
 }
