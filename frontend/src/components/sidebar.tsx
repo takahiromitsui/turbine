@@ -35,7 +35,7 @@ export default function Sidebar({
 			<ul>
 				<li className='pb-24'>
 					<span className='text-input'>Turbine ID</span>
-					<Select onValueChange={handleTurbineID}>
+					<Select onValueChange={handleTurbineID} defaultValue='1'>
 						<SelectTrigger>
 							<SelectValue placeholder='Select a Turbine' />
 						</SelectTrigger>
