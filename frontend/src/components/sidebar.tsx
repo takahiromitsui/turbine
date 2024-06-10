@@ -69,7 +69,9 @@ export default function Sidebar({
 						<DatePicker
 							className='appearance-none boarder rounded py-3 px-2 w-full'
 							showTimeSelect
-							minDate={new Date('2016-01-01')}
+							minDate={
+								selectedStartDate ? selectedStartDate : new Date('2016-01-01')
+							}
 							maxDate={new Date('2016-04-01')}
 							selected={selectedEndDate}
 							onChange={date => setSelectedEndDate(date as Date)}
