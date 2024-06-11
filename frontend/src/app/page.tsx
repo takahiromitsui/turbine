@@ -9,9 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 
 export default function Home() {
-	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
-		null
-	);
+	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(1);
 	const [selectedStartDate, setSelectedStartDate] = useState<Date>(
 		new Date('2016-01-01 00:00')
 	);
@@ -29,11 +27,11 @@ export default function Home() {
 		if (!selectedTurbineID) {
 			toast({
 				variant: 'destructive',
-				title: 'Please select a turbine ID.',
-				description: 'You must select a turbine ID to proceed.',
+				title: 'Please select a valid turbine ID.',
+				description: 'The turbine ID should be a number.',
 				action: <ToastAction altText='Try again'>Try again</ToastAction>,
 			});
-			return;
+			return false;
 		}
 		if (selectedStartDate >= selectedEndDate) {
 			toast({
@@ -42,37 +40,59 @@ export default function Home() {
 				description: 'The end date should be greater than the start date.',
 				action: <ToastAction altText='Try again'>Try again</ToastAction>,
 			});
-			return;
+			return false;
+		}
+		return true;
+	};
+
+	const handleFetchData = async () => {
+		try {
+			const res = await fetchTurbineData({
+				turbineID: selectedTurbineID,
+				startDate: selectedStartDate,
+				endDate: selectedEndDate,
+			});
+			return res;
+		} catch (error) {
+			toast({
+				variant: 'destructive',
+				title: 'An error occurred while fetching data.',
+				description: 'Please check your internet connection and try again.',
+				action: <ToastAction altText='Try again'>Try again</ToastAction>,
+			});
+			return null;
 		}
 	};
 
-	const handleOnClick = async () => {
-		handleToast();
-		const res = await fetchTurbineData({
-			turbineID: selectedTurbineID,
-			startDate: selectedStartDate,
-			endDate: selectedEndDate,
+	const handleSetTurbineData = (res: any) => {
+		const { label, data } = extractDataFromResponse(res);
+		const formattedStartDate = formatDate(selectedStartDate);
+		const formattedEndDate = formatDate(selectedEndDate);
+		setTurbineData({
+			data: {
+				labels: label,
+				datasets: [
+					{
+						// time range and power
+						// should be like this: Power(Leistung): 01.01.2016 00:00 - 01.04.2016 00:00
+						label: ` Power(Leistung): Turbine ID: ${selectedTurbineID}, ${formattedStartDate} - ${formattedEndDate}`,
+						data: data,
+						borderColor: 'rgb(75,192,192)',
+					},
+				],
+			},
+			options: chartOptions,
 		});
-		if (res) {
-			const { label, data } = extractDataFromResponse(res);
-			const formattedStartDate = formatDate(selectedStartDate);
-			const formattedEndDate = formatDate(selectedEndDate);
+	}
 
-			setTurbineData({
-				data: {
-					labels: label,
-					datasets: [
-						{
-							// time range and power
-							// should be like this: Power(Leistung): 01.01.2016 00:00 - 01.04.2016 00:00
-							label: ` Power(Leistung): Turbine ID: ${selectedTurbineID}, ${formattedStartDate} - ${formattedEndDate}`,
-							data: data,
-							borderColor: 'rgb(75,192,192)',
-						},
-					],
-				},
-				options: chartOptions,
-			});
+	const handleOnClick = async () => {
+		const isInputValid = handleToast();
+    if (!isInputValid) {
+        return;
+    }
+		const res = await handleFetchData();
+		if (res) {
+			handleSetTurbineData(res);
 		}
 	};
 
