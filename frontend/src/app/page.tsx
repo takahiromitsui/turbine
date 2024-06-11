@@ -5,6 +5,8 @@ import { chartOptions, emptyData } from '@/lib/chartData';
 import Sidebar from '@/components/sidebar';
 import LineGraph from '@/components/line';
 import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 
 export default function Home() {
 	const [selectedTurbineID, setSelectedTurbineID] = useState<number | null>(
@@ -18,12 +20,34 @@ export default function Home() {
 	);
 
 	const [turbineData, setTurbineData] = useState<any>(emptyData);
+	const { toast } = useToast();
 
 	const handleTurbineID = (value: string) => {
 		setSelectedTurbineID(parseInt(value));
 	};
+	const handleToast = () => {
+		if (!selectedTurbineID) {
+			toast({
+				variant: 'destructive',
+				title: 'Please select a turbine ID.',
+				description: 'You must select a turbine ID to proceed.',
+				action: <ToastAction altText='Try again'>Try again</ToastAction>,
+			});
+			return;
+		}
+		if (selectedStartDate >= selectedEndDate) {
+			toast({
+				variant: 'destructive',
+				title: 'Please select a valid date range.',
+				description: 'The end date should be greater than the start date.',
+				action: <ToastAction altText='Try again'>Try again</ToastAction>,
+			});
+			return;
+		}
+	};
 
 	const handleOnClick = async () => {
+		handleToast();
 		const res = await fetchTurbineData({
 			turbineID: selectedTurbineID,
 			startDate: selectedStartDate,
