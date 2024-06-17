@@ -14,7 +14,7 @@ export default function Home() {
 		new Date('2016-01-01 00:00')
 	);
 	const [selectedEndDate, setSelectedEndDate] = useState<Date>(
-		new Date('2016-01-01 00:00')
+		new Date('2016-01-01 00:10')
 	);
 
 	const [turbineData, setTurbineData] = useState<any>(emptyData);

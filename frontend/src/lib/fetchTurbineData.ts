@@ -45,6 +45,5 @@ export async function fetchTurbineData(data: TurbineData) {
 			'Content-Type': 'application/json',
 		},
 	});
-	console.log(response);
 	return response.json();
 }
