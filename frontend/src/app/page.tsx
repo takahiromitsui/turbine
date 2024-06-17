@@ -42,6 +42,10 @@ export default function Home() {
 			});
 			return false;
 		}
+		toast({
+			title: 'Data is being fetched.',
+			description: 'Please wait a moment.',
+		})
 		return true;
 	};
 
