@@ -6,25 +6,33 @@ type TurbineData = {
 	endDate: Date;
 };
 
-function formatDateToUTC(date: Date) {
-	const [year, month, day, hours, minutes, seconds] = [
-		date.getUTCFullYear(),
-		date.getUTCMonth(),
-		date.getUTCDate(),
-		date.getUTCHours(),
-		date.getUTCMinutes(),
-		date.getUTCSeconds(),
+function formatToGermanISO(date: Date): string {
+	const [year, month, day, hours, minutes, seconds, milliseconds] = [
+		date.getFullYear(),
+		date.getMonth() + 1,
+		date.getDate(),
+		date.getHours(),
+		date.getMinutes(),
+		date.getSeconds(),
+		date.getMilliseconds(),
 	];
-	return new Date(
-		Date.UTC(year, month, day, hours, minutes, seconds)
-	).toISOString();
+
+	// Pad with zeros
+	const paddedMonth = month.toString().padStart(2, '0');
+	const paddedDay = day.toString().padStart(2, '0');
+	const paddedHours = hours.toString().padStart(2, '0');
+	const paddedMinutes = minutes.toString().padStart(2, '0');
+	const paddedSeconds = seconds.toString().padStart(2, '0');
+	const paddedMilliseconds = milliseconds.toString().padStart(3, '0');
+
+	return `${year}-${paddedMonth}-${paddedDay}T${paddedHours}:${paddedMinutes}:${paddedSeconds}.${paddedMilliseconds}`;
 }
 
 export async function fetchTurbineData(data: TurbineData) {
 	const { turbineID, startDate, endDate } = data;
 
-	const formattedStartDate = formatDateToUTC(startDate);
-	const formattedEndDate = formatDateToUTC(endDate);
+	const formattedStartDate = formatToGermanISO(startDate);
+	const formattedEndDate = formatToGermanISO(endDate);
 
 	if (!turbineID) {
 		return;
@@ -37,5 +45,6 @@ export async function fetchTurbineData(data: TurbineData) {
 			'Content-Type': 'application/json',
 		},
 	});
+	console.log(response);
 	return response.json();
 }
